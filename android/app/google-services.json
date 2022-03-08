@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "269486832252",
+    "project_id": "registroatestados",
+    "storage_bucket": "registroatestados.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:269486832252:android:43ec03f154098e065be7f9",
+        "android_client_info": {
+          "package_name": "com.example.registroatestados"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "269486832252-hbbp43ip7luqbajlnpduoaujusjt358n.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.registroatestados",
+            "certificate_hash": "7565249e654166447ede759eedd5c91a8e43330d"
+          }
+        },
+        {
+          "client_id": "269486832252-jtkgeas8ng2bahu3tc5dfdnlnjntt9l2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCABVFXCQyhpdjO1W34qF_oLY7eFK1x0mM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "269486832252-jtkgeas8ng2bahu3tc5dfdnlnjntt9l2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
