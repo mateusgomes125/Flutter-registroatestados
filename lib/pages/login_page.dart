@@ -1,164 +1,185 @@
+//import 'dart:html';
+import 'dart:js';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:font_awesome_flutter/src/fa_icon.dart';
+import 'package:registroatestados/auth.dart';
 import 'package:provider/provider.dart';
-import 'package:registroatestados/pages/cadastro.dart';
-import 'package:registroatestados/google_sign_in.dart';
+import 'package:flutter/src/widgets/framework.dart';
+import 'package:registroatestados/pages/HomePage.dart';
+
+//import 'package:registroatestados/pages/cadastro.dart';
+//import 'package:registroatestados/google_sign_in.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  String email = '';
-  String senha = '';
+  final formKey = GlobalKey<FormState>();
+  final email = TextEditingController();
+  final senha = TextEditingController();
 
-  late bool _obscurePass;
+  bool isLogin = true;
+  late String titulo;
+  late String actionButton;
+  late String toggleButton;
+  bool loading = false;
 
   @override
   void initState() {
     super.initState();
-    _obscurePass = true;
+    setFormAction(true);
+  }
+
+  setFormAction(bool acao) {
+    setState(() {
+      isLogin = acao;
+
+      if (isLogin) {
+        titulo = 'Bem-vindo';
+        actionButton = 'Login';
+        toggleButton = 'Ainda não tem conta? Cadastre-se agora';
+      } else {
+        titulo = 'Crie sua conta';
+        actionButton = 'Cadastrar';
+        toggleButton = 'Voltar ao login';
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final double width = MediaQuery.of(context).size.width;
-    final double height = MediaQuery.of(context).size.height;
-
-    return Material(
-      child: SizedBox(
-        width: width,
-        height: height,
+    return Scaffold(
+      body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextField(
-                  onChanged: (text) {
-                    email = text;
-                  },
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                      labelText: 'Email', border: OutlineInputBorder())),
-              SizedBox(height: 10),
-              TextField(
-                  onChanged: (text) {
-                    senha = text;
-                  },
-                  obscureText: _obscurePass,
-                  decoration: InputDecoration(
-                    labelText: 'Senha',
-                    border: OutlineInputBorder(),
-                    suffixIcon: IconButton(
-                      icon: _obscurePass
-                          ? Icon(Icons.visibility)
-                          : Icon(Icons.visibility_off),
-                      iconSize: 30,
-                      onPressed: () =>
-                          setState(() => _obscurePass = !_obscurePass),
-                    ),
-                  )),
-              SizedBox(height: 20),
-              Container(
-                width: width,
-                child: ElevatedButton(
-                  onPressed: () {},
-                  child: Text('Entrar'),
+          padding: EdgeInsets.only(top: 100),
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  titulo,
+                  style: TextStyle(
+                    fontSize: 35,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: -1.5,
+                  ),
                 ),
-              ),
-              SizedBox(
-                height: 30,
-              ),
-              SizedBox(
-                height: 20,
-                child: Text(
-                  'Não possui uma conta? Cadastre-se',
-                  style: TextStyle(color: Colors.grey, fontSize: 12),
-                ),
-              ),
-              Container(
-                width: width,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute<void>(
-                      builder: (BuildContext context) => Cadastro(),
+                Padding(
+                  padding: EdgeInsets.all(24),
+                  child: TextFormField(
+                      controller: email,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'E-mail',
                       ),
-                    );
-                  },
-                  child: Text('Cadastre-se'),
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return "Informe o email corretamente";
+                        }
+                        return null;
+                      }),
                 ),
-              ),
-              SizedBox(
-                height: 30,
-              ),
-              Container(
-                child: loginUI(),
-              ),
-            ],
+                Padding(
+                  padding:
+                      EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
+                  child: TextFormField(
+                      controller: email,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Senha',
+                      ),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return "Informe sua senha";
+                        } else if (value.length < 6) {
+                          return "A senha deve conter no mínimo 6 caracteres";
+                        }
+                        return null;
+                      }),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(24),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (formKey.currentState!.validate()) {
+                        if (isLogin) {
+                          setState(() => loading = true);
+                          try {
+                            context
+                                .read<AuthService>()
+                                .Registrar(email.text, senha.text);
+                                
+                                Navigator.of(context).push(MaterialPageRoute<void>(
+                              builder: (BuildContext context) => HomePage(),
+                                ),
+                              );
+                          } on AuthException catch (e) {
+                            setState(() => loading = false);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(e.message)));                            
+                          }
+                        } else {
+                          setState(() => loading = true);
+                          try {
+                            context
+                                .read<AuthService>()
+                                .Login(email.text, senha.text);
+
+                            Navigator.of(context).push(MaterialPageRoute<void>(
+                              builder: (BuildContext context) => HomePage(),
+                                ),
+                              );
+                          } on AuthException catch (e) {
+                            setState(() => loading = false);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(e.message)));
+                          }
+                        }
+                      }
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: (loading) 
+                      ? [
+                        Padding(
+                          padding: EdgeInsets.all(16),
+                          child: SizedBox(
+                            width: 24, 
+                            height: 24, 
+                            child: CircularProgressIndicator(color: Colors.white)
+                          ),
+                        )
+                      ]
+                      :
+                      [
+                        Icon(Icons.check),
+                        Padding(
+                          padding: EdgeInsets.all(16),
+                          child: Text(
+                            actionButton,
+                            style: TextStyle(fontSize: 20),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () => setFormAction(!isLogin),
+                  child: Text(toggleButton),
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-    );
-  }
-
-  loginUI() {
-    return Consumer<GoogleSignInController>(
-      builder: (context, model, child) {
-        if (model.googleAccount != null) {
-          return Center(
-            child: loggedInUI(model),
-          );
-        } else {
-          return loginControls(context);
-        }
-      },
-    );
-  }
-
-  loggedInUI(GoogleSignInController model) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        CircleAvatar(
-          backgroundImage:
-              Image.network(model.googleAccount!.photoUrl ?? '').image,
-          radius: 50,
-        ),
-        Text(model.googleAccount!.displayName ?? ''),
-        Text(model.googleAccount!.email),
-        ActionChip(
-          avatar: Icon(Icons.logout),
-          label: Text('Logout'),
-          onPressed: () {
-            Provider.of<GoogleSignInController>(context, listen: false)
-                .logOut();
-          },
-        )
-      ],
-    );
-  }
-
-  loginControls(BuildContext context) {
-    return Center(
-      child: Column(
-        children: [
-          GestureDetector(
-            child: Image.asset(
-              "assets/images/google.png",
-              width: 250,
-            ),
-            onTap: () {
-              Provider.of<GoogleSignInController>(context, listen: false)
-                  .login();
-            },
-          )
-        ],
       ),
     );
   }

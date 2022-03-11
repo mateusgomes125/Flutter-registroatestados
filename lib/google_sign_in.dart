@@ -1,39 +1,26 @@
 //import 'dart:html';
 
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-//import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:google_sign_in/google_sign_in.dart';
+// //import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:flutter/material.dart';
 
-class GoogleSignInController extends ChangeNotifier {
-  var _googleSignIn = GoogleSignIn();
-  GoogleSignInAccount? googleAccount;
-  // FirebaseAuth _auth = FirebaseAuth.instance;
-  // User? usuario;
-  // bool isLoading = true;
+// class GoogleSignInController extends ChangeNotifier {
+//   var _googleSignIn = GoogleSignIn();
+//   GoogleSignInAccount? googleAccount;
+ 
+  
 
-  // AuthService() {
-  //   _authCheck();
-  // }
+//   login() async {
+//     this.googleAccount = await _googleSignIn.signIn();
+//     notifyListeners();
+//   }
 
-  // _authCheck() {
-  //   _auth.authStateChanges().listen((User? user) {
-  //     usuario = (user == null) ? null : user;
-  //     isLoading = false;
-  //     notifyListeners();
-  //   });
-  // }
-
-  login() async {
-    this.googleAccount = await _googleSignIn.signIn();
-    notifyListeners();
-  }
-
-  logOut() async {
-    this.googleAccount = await _googleSignIn.signOut();
-    notifyListeners();
-  }
-}
+//   logOut() async {
+//     this.googleAccount = await _googleSignIn.signOut();
+//     notifyListeners();
+//   }
+// }
 
 
 
