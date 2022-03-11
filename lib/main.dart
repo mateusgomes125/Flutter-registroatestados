@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:registroatestados/PrimeiraTela.dart';
+import 'package:registroatestados/pages/PrimeiraTela.dart';
 import 'package:registroatestados/auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:registroatestados/pages/HomePage.dart';
@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
 
               ],
               child: MaterialApp(
-                home: HomePage(),
+                home: PrimeiraTela(),
                 debugShowCheckedModeBanner: false,
                 ),
             );
